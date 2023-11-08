@@ -7,10 +7,10 @@ class stop:
     
 #a node represents a bar, it has a name, an x-y location, peak fun, peak time, and deviation
 class Node:
-    def __init__(self, name, x_loc: float,y_loc: float,p_fun:float , p_time:float, t_dev:float):
+    def __init__(self, name, lat: float,long: float,p_fun:float , p_time:float, t_dev:float):
         self.name = name
-        self.x_loc = x_loc
-        self.y_loc = y_loc
+        self.lat = lat
+        self.long = long
         self.p_fun = p_fun
         self.p_time = p_time
         self.t_dev = t_dev
@@ -18,8 +18,8 @@ class Node:
         
     def node_print(self): # print everything
         print(" " +self.name)
-        print(" " +self.x_loc)
-        print(" " +self.y_loc)
+        print(" " +self.lat)
+        print(" " +self.long)
         print(" " +self.p_fun)
         print(" " +self.p_time)
         print(" " +self.t_dev)
