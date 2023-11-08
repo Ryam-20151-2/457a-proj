@@ -1,11 +1,25 @@
 import math
 import classes 
 
+def calc_distance(stop: classes.stop, prev_stop: classes.stop):
+
+    R = 6371                    #earths rad in km
+
+    #variable priming
+    lat1 = stop.node.lat * math.pi/180                 
+    lat2 = prev_stop.lat * math.pi/180
+    
+    delta_lat = (stop.node.lat-prev_stop.lat) * math.pi/180
+    delta_long = (stop.node.lon-prev_stop.long) * math.pi/180
+
+    a = (math.sin(delta_lat/2) ** 2) + (math.cos(lat1) * math.cos(lat2) * (math.cos(delta_long/2) ** 2))
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+
+    return R * c             #distance in km
+
 def calc_distance_penatly(stop: classes.stop, prev_stop: classes.stop):
 
-    x_delta_sq = (float(stop.node.lat) - float(prev_stop.node.lat)) ** 2
-    y_delta_sq = (float(stop.node.long) - float(prev_stop.node.long)) ** 2
-    distance = (x_delta_sq + y_delta_sq) ** 0.5
+    distance = calc_distance(stop=stop, prev_stop=prev_stop)
 
     return 20 * (distance ** 1.2)
 
