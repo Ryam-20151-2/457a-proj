@@ -22,10 +22,10 @@ def create():
 # and each stop should be added in order based on your algorithm
 def create_crawl(head, nodes):
     crawl = []
-    crawl.append(classes.stop(nodes[0],0,2))
-    crawl.append(classes.stop(nodes[1],2,4))
-    crawl.append(classes.stop(nodes[2],4,6))
-    crawl.append(classes.stop(nodes[3],6,8))
+    crawl.append(classes.stop(nodes[0],0,120))
+    crawl.append(classes.stop(nodes[1],120,240))
+    crawl.append(classes.stop(nodes[2],240,360))
+    crawl.append(classes.stop(nodes[3],360,480))
     #add more shit based on your code
     #append stops to crawl, return crawl when complete
     #import your file and add your function here
