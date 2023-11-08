@@ -3,8 +3,8 @@ import classes
 
 def calc_distance_penatly(stop: classes.stop, prev_stop: classes.stop):
 
-    x_delta_sq = (float(stop.node.x_loc) - float(prev_stop.node.x_loc)) ** 2
-    y_delta_sq = (float(stop.node.y_loc) - float(prev_stop.node.y_loc)) ** 2
+    x_delta_sq = (float(stop.node.lat) - float(prev_stop.node.lat)) ** 2
+    y_delta_sq = (float(stop.node.long) - float(prev_stop.node.long)) ** 2
     distance = (x_delta_sq + y_delta_sq) ** 0.5
 
     return 20 * (distance ** 1.2)
