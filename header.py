@@ -46,8 +46,11 @@ def create():
 
 def create_crawl(head, nodes):
     crawl = []
-    crawl.append(stop(head,0,2))
+    crawl.append(stop(head,0,1))
+    #crawl.append(stop(head,2,3))
     #add more shit based on your code
+    #append stops to crawl, return crawl when complete
+    #import your file and add your function here
     return crawl
 
 def calc_payoff(stop):
@@ -68,12 +71,31 @@ def evaluate_crawl(crawl):
         val -= calc_distance_penalty(x, prev_stop)
         prev_stop = x;
     return val
+
+def is_valid(crawl: []):
+    if(len(crawl) < 2):
+        print("huh")
+        return False
+    
+    last_stop = None
+    for x in crawl:
+        if(last_stop != None): 
+            if(last_stop.e_time != x.s_time):
+                return False
+        last_stop = x
+        
+    
+    return True
+    
     
 def main():
     head, nodes = create()
     crawl = create_crawl(head, nodes)
-    val = evaluate_crawl(crawl)
-    print("your crawl has value "+ str(val))
+    if (is_valid(crawl)):
+        val = evaluate_crawl(crawl)
+        print("your crawl has value "+ str(val))
+    else:
+        print("your crawl is shit")
     
   
 if __name__ == "__main__":
