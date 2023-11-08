@@ -1,19 +1,12 @@
 import random
 import csv
 
-with open('ex.csv', newline='') as csvfile:
-    spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-
-
 class stop:
     def __init__(self, node, s_time, e_time):
         self.node = node
         self.s_time = s_time
         self.e_time = e_time
     
-    def evalute():
-        payoff = 12
-        return payoff
       
 class Node:
     def __init__(self, name, x_loc,y_loc,p_fun, p_time, t_dev):
@@ -54,20 +47,26 @@ def create():
 def create_crawl(head, nodes):
     crawl = []
     crawl.append(stop(head,0,2))
-    crawl.append(stop(head,2,3))
     #add more shit based on your code
     return crawl
 
-def payoff(stop):
+def calc_payoff(stop):
     #idk JP's payoff math
-    val2 = stop
     val = 1 # it isn't
+    return val
+
+def calc_distance_penalty(stop, prev_stop):
+    #idk JP's penalty math
+    val = 0.5 # it isn't
     return val
 
 def evaluate_crawl(crawl):
     val = 0
+    prev_stop = crawl[0]
     for x in crawl:
-        val += payoff(x)
+        val += calc_payoff(x)
+        val -= calc_distance_penalty(x, prev_stop)
+        prev_stop = x;
     return val
     
 def main():
