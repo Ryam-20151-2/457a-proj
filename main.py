@@ -47,7 +47,7 @@ def evaluate_crawl(crawl):
     for x in crawl:
         val += calc_payoff(x)
         val -= calc_distance_penalty(x, prev_stop)
-        prev_stop = x;
+        prev_stop = x
     return val
 
 #this will be called to see if a crawl is valid and can be evaluated
