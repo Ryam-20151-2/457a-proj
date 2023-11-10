@@ -1,3 +1,5 @@
+
+
 #this class is for a stop, one stop is a node, representing a bar, and the times are when you arrive and leave
 class stop:
     def __init__(self, node, s_time: float, e_time: float):
@@ -7,10 +9,10 @@ class stop:
     
 #a node represents a bar, it has a name, an x-y location, peak fun, peak time, and deviation
 class Node:
-    def __init__(self, name, lat: float,long: float,p_fun:float , p_time:float, t_dev:float):
+    def __init__(self, name, lat: float,longatude: float,p_fun:float , p_time:float, t_dev:float):
         self.name = name
         self.lat = lat
-        self.long = long
+        self.long = longatude
         self.p_fun = p_fun
         self.p_time = p_time
         self.t_dev = t_dev
@@ -18,8 +20,13 @@ class Node:
         
     def node_print(self): # print everything
         print(" " +self.name)
-        print(" " +self.lat)
-        print(" " +self.long)
-        print(" " +self.p_fun)
-        print(" " +self.p_time)
-        print(" " +self.t_dev)
+        print(" " +str(self.lat))
+        print(" " +str(self.long))
+        print(" " +str(self.p_fun))
+        print(" " +str(self.p_time))
+        print(" " +str(self.t_dev))
+        
+
+       
+
+        
