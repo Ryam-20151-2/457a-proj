@@ -7,10 +7,10 @@ def calc_distance(stop: classes.stop, prev_stop: classes.stop):
 
     #variable priming
     lat1 = stop.node.lat * math.pi/180                 
-    lat2 = prev_stop.lat * math.pi/180
+    lat2 = prev_stop.node.lat * math.pi/180
     
-    delta_lat = (stop.node.lat-prev_stop.lat) * math.pi/180
-    delta_long = (stop.node.lon-prev_stop.long) * math.pi/180
+    delta_lat = (stop.node.lat-prev_stop.node.lat) * math.pi/180
+    delta_long = (stop.node.long-prev_stop.node.long) * math.pi/180
 
     a = (math.sin(delta_lat/2) ** 2) + (math.cos(lat1) * math.cos(lat2) * (math.cos(delta_long/2) ** 2))
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
