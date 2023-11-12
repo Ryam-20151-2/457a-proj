@@ -3,6 +3,7 @@ import classes
 
 import math
 import random
+import copy
 
 class Crawl:
     def __init__(self, stops: [], start: int=0, end: int=480):
@@ -35,7 +36,7 @@ class Crawl:
         self.stops.append(stop)
 
     def length(self):
-        return self.stops.length()
+        return len(self.stops)
         
 
 
@@ -82,7 +83,7 @@ class Crawl:
 
         num_stops = self.length()
 
-        for i in range(0, self.length()):
+        for i in range(0, num_stops):
             self[i].s_time = math.floor((i * (self.end-self.start)) / num_stops) + self.start
             self[i].e_time = math.floor(((i+1) * (self.end-self.start)) / num_stops) + self.start
         
@@ -92,7 +93,7 @@ class Crawl:
     #generates a node that is not already in the crawl
     def generate_new_node(self, nodes: list[classes.Node]) -> classes.Node:
         
-        num_nodes = nodes.length()
+        num_nodes = len(nodes)
 
         #finds bar not already on crawl and adds it to crawl
         node = None
@@ -109,7 +110,7 @@ class Crawl:
     #removes all crawl data and creates a new random crawl
     def randomize(self, head: classes.Node, nodes: list[classes.Node]):
 
-        self = Crawl()
+        self = Crawl([])
         self.append(classes.stop(node=head, s_time=0, e_time=0))        #creates crawl list with the first stop
 
         num_stops = random.randint(2, 5)    #generates a random number for the stops
@@ -118,11 +119,18 @@ class Crawl:
         for i in range(1, num_stops):
 
             new_node = self.generate_new_node(nodes)
-            self.append(classes.stop(nodes[new_node]))
-
+            self.append(classes.stop(new_node,0,0))
         #sets the start and end times evenly spaced
         self.balance_times()
 
         return self
-
     
+    # deep copy crawl
+    def copy(self):
+        return copy.deepcopy(self)
+
+    # print crawl history
+    def print_crawl_history(self):
+        print("Crawl History:")
+        for stop in self.stops:
+            print(f"{stop.node.name} from {stop.s_time} to {stop.e_time}")

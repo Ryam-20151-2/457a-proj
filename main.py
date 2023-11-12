@@ -35,10 +35,10 @@ def create_crawl(head, nodes):
 def main():
     head, nodes = create()
     crawl = create_crawl(head, nodes)
+    crawl.print_crawl_history()
     if (crawl.isValid):
         val = crawl.evaluate_crawl()
-        print(val)
-        print("your crawl has value "+ str(val))
+        print(f"your crawl has value {val}")
     else:
         print("your crawl is shit")
     
