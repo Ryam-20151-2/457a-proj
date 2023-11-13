@@ -17,7 +17,11 @@ def ant_colony():
     time_elapsed = np.zeros(n) # time elapsed for each ant, initially zero
 
     # creating a 2D array to hold the phermones with the bars and the times, initally zero
-    phermones = np.zeros((len(nodes), hours))
+    phermones = np.ones((len(nodes), hours))
+    # change first column to be zeros EXCEPT at the head
+    for i in range(len(nodes)):
+        if (i != csv.index(head)):  # TODO: why the fuck is this index not working
+            phermones[i][0] = 0
     
     # initalize optimized values
     best_crawl = crawl_class.Crawl([])
@@ -26,30 +30,35 @@ def ant_colony():
     while(t<100): # until convergence...
         for ant in range(len(n)):
             ant_crawl = crawl_class.Crawl([]) # initialize an empty crawl per ant
-            while(time_elapsed[ant] < 480): # crawl for each ant ends when the end time is met
-                total_path_payoff = ant_crawl.evaluate_crawl()
-                best_payoff = best_crawl.evaluate_crawl()
-                if t == 0: # for the first iteration
-                    bar_index = nodes.index(head) # start at the head node
-                    hours_index = 0 # start at time zero
-                else: # for all other non-zero iterations
-                    print("TODO")
-                    hours_index = random.gauss()
-                    bar_index = random.guass(phermones[bar_index][0])# TODO: bar_index - pick based off probability
-                    # TODO: hours_index - pick based off proabaility???
-                phermones[bar_index][hours_index] += total_path_payoff # update phermone trail at the indicies the ant travelled to
-                ant_crawl.append(classes.stop(nodes[bar_index],time_start,time_end)) # TODO: update the ant's crawl with the node, and times the ant travelled to
-                if total_path_payoff < best_payoff: # update the best cost and path parameters
-                    best_payoff = total_path_payoff
-                    best_crawl = ant_crawl
-                time_elapsed[ant] += time_end - time_start # TODO: update the elapsed time of the ant
-        for i in phermones: # for every stop/time combination in the 2D array..
-            for j in i:
-                j = (1-p)*j # evaporate every pheromones value
-        t += 1 # go to the next iteration
+            probability = random.random()   # probability for ant to visit a bar
+            for t in range(hours):
+                for bar in range(len(nodes)):
+                    limit = phermones[bar][t]   # chance of visiting the bar is based on the phermones
+                    if (probability < limit):   # if probability is less than the limit, go to the bar
+                        bar_chosen = phermones[bar][t] 
+                        break
+                    else:
+                        probability -= limit   # increase the probability of going to a bar if the bar limit is too high
+
+                # add bar stop to the path the ant is on
+                ant_crawl.append(bar_chosen)
+            
+            # evaluate the ant's path to calculate payoff
+            number = ant_crawl.evaluate_crawl   # TODO: does this number mean our payoff per path??
+            concat_crawl = ant_crawl # TODO: concatenate the crawl
+
+            # check the best crawl so far and update accordingly
+            if (number > best_payoff):
+                best_payoff = number
+                best_crawl = concat_crawl
+            
+            # updating phermones
+            # TODO: too much brain rn but have todo a for for the bars visited
+            # then add the payoff/hyperparameter to the phermone for that bar
+
+            # normalize the phermones in the bar
+            phermones = np.norm(phermones)
+
     return best_crawl
-
-
-
 
                     
