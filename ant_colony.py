@@ -37,7 +37,8 @@ def ant_colony():
             ant_crawl = crawl_class.Crawl([]) # initialize an empty crawl per ant
             probability = random.random()   # probability for ant to visit a bar
             for t in range(hours):
-                for bar in range(len(nodes)): # TODO: make random somehow
+                random.shuffle(nodes) # randomly iterate through bars so the first bar isnt always chosen first
+                for bar in range(len(nodes)): 
                     limit = phermones[bar][t]   # chance of visiting the bar is based on the phermones
                     if (probability < limit):   # if probability is less than the limit, go to the bar
                         bar_chosen = bar
@@ -63,11 +64,10 @@ def ant_colony():
             
             # updating phermones
             for stop in ant_crawl.stops:
+                    print(stop.node.name)
                     phermones[nodes.index(stop.node)][int((stop.e_time-stop.s_time)/60)] += best_payoff/gamma
 
             # normalize the phermones in the bar
             phermones = normalize_2d(phermones)
 
     return best_crawl
-
-ant_colony()
