@@ -2,6 +2,7 @@ import random
 import csv
 import classes
 import crawl_class
+import simulated_annealing
 #imports
 
 # this is a setup funciton, it reads a csv and initializes all the nodes and returns a list and head    
@@ -30,12 +31,21 @@ def create_crawl(head, nodes):
     #append stops to crawl, return crawl when complete
     #import your file and add your function here
     return crawl
-    
+
+# create simulated annealing crawl
+def create_sa_crawl(head, nodes):
+    # all parameters but head and nodes are optional
+    sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes, num_stops=-1, iterations = 1000, temperature = 30, temperature_decrement_method = 'geometric', alpha = 0.1, beta = 0.9, debug = False)
+    crawl = sa.simulated_annealing()
+    return crawl
+
 # this the main, wild, don't touch it    
 def main():
     head, nodes = create()
     crawl = create_crawl(head, nodes)
     crawl.print_crawl_history()
+    sa_crawl = create_sa_crawl(head, nodes)
+
     if (crawl.isValid):
         val = crawl.evaluate_crawl()
         print(f"your crawl has value {val}")
