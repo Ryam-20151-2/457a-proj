@@ -1,20 +1,11 @@
 import main
+import genetic
 import classes
 
 head, nodes = main.create()
-crawl = main.create_crawl(head, nodes)
-
-node = crawl.generate_new_node(nodes)
-stop = classes.stop(node)
+crawl = genetic.create_crawl_genetic(head, nodes)
 
 print(crawl)
-
-crawl.insert(0, stop)
-
-print(crawl)
-crawl.remove(stop)
-
-
-print(crawl)
+print(crawl.evaluate_crawl())
 
 pass
