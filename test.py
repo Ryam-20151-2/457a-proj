@@ -1,8 +1,10 @@
 import main
-import narrowBars
+import genetic
 
 head, nodes = main.create()
+crawl = genetic.create_crawl_genetic(head, nodes)
 
-newList = narrowBars.narrowBars(head=head, nodes=nodes)
+print(crawl)
+print(crawl.evaluate_crawl())
 
 pass

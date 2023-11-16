@@ -37,6 +37,9 @@ class Crawl:
 
         #print(string)
         return string
+    
+    def __lt__(self, other):
+        return self.evaluate_crawl() < other.evaluate_crawl()
 
     #utility array functions
     def append(self, stop: classes.stop):
