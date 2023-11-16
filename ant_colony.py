@@ -64,10 +64,13 @@ def ant_colony():
             
             # updating phermones
             for stop in ant_crawl.stops:
-                    print(stop.node.name)
                     phermones[nodes.index(stop.node)][int((stop.e_time-stop.s_time)/60)] += best_payoff/gamma
 
             # normalize the phermones in the bar
             phermones = normalize_2d(phermones)
 
     return best_crawl
+
+
+bc = ant_colony()
+print(bc)
