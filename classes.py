@@ -2,7 +2,7 @@
 
 #this class is for a stop, one stop is a node, representing a bar, and the times are when you arrive and leave
 class stop:
-    def __init__(self, node, s_time: float, e_time: float):
+    def __init__(self, node, s_time: float=0, e_time: float=0):
         self.node = node
         self.s_time = s_time # start time
         self.e_time = e_time # end time

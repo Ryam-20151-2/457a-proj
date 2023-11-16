@@ -29,11 +29,24 @@ class Crawl:
     def __contains__(self, key):
         return (key in self.stops)
     
+    def __str__(self) -> str:
 
+        string = ""
+        for stop in self.stops:
+            string = string + f"{stop.node.name} from {stop.s_time} to {stop.e_time}\n"
+
+        #print(string)
+        return string
 
     #utility array functions
     def append(self, stop: classes.stop):
-        self.stops.append(stop)
+        return self.stops.append(stop)
+
+    def remove(self, stop: classes.stop):
+        return self.stops.remove(stop)
+    
+    def insert(self, index: int, stop: classes.stop):
+        return self.stops.insert(index, stop)
 
     def length(self):
         return len(self.stops)
