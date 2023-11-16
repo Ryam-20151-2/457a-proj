@@ -126,6 +126,7 @@ class SimulatedAnnealingOptimizer:
         self.current_crawl_fun = self.current_crawl.evaluate_crawl()
         self.best_crawl = self.current_crawl.copy()
         self.best_crawl_fun = self.best_crawl.evaluate_crawl()
+        self.number_of_stops = self.current_crawl.length()
 
         itr = 0
 
