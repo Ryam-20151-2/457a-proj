@@ -42,14 +42,9 @@ def create_sa_crawl(head, nodes):
 # this the main, wild, don't touch it    
 def main():
     head, nodes = create()
-    # crawl = create_crawl(head, nodes)
-    # crawl.print_crawl_history()
-    sa_crawl = create_sa_crawl(head, nodes)
-    crawl = sa_crawl
+    crawl = create_crawl(head, nodes)
     crawl.print_crawl_history()
-
-    # crawl = test_ils.main_ILS(head=head, nodes=nodes)
-    # crawl.print_crawl_history()
+    sa_crawl = create_sa_crawl(head, nodes)
 
     if (crawl.isValid):
         val = crawl.evaluate_crawl()
