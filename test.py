@@ -1,19 +1,8 @@
 import main
-import classes
-import crawl_class
-import smartsearch
+import narrowBars
 
 head, nodes = main.create()
 
-crawl = main.create_crawl(head, nodes)
-stop = crawl[-1]
-
-pass
-
-crawl = smartsearch.smartSearch(head, nodes)
-
-
-print(crawl)
-print(crawl.evaluate_crawl())
+newList = narrowBars.narrowBars(head=head, nodes=nodes)
 
 pass
