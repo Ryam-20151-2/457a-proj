@@ -108,12 +108,19 @@ class Crawl:
     
 
     #removes all crawl data and creates a new random crawl
-    def randomize(self, head: classes.Node, nodes: list[classes.Node]):
+    def randomize(self, head: classes.Node, nodes: list[classes.Node], num_stops: int = -1):
 
         self = Crawl([])
         self.append(classes.stop(node=head, s_time=0, e_time=0))        #creates crawl list with the first stop
 
-        num_stops = random.randint(2, 5)    #generates a random number for the stops
+        # if no required stops, randomly select number
+        if num_stops == -1:
+            num_stops = random.randint(2, 5)    #generates a random number for the stops
+        
+        # ensure stop count chosen is within bounds
+        else:
+            num_stops = max(num_stops,2)
+            num_stops = min(num_stops, len(nodes))
 
         #adds random number of stops to the list
         for i in range(1, num_stops):

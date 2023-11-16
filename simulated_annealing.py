@@ -5,7 +5,7 @@ import numpy as np
 from scipy.special import logsumexp
 
 class SimulatedAnnealingOptimizer:
-    def __init__(self, head, nodes, iterations = 1000, temperature = 30, temperature_decrement_method = 'linear', alpha = 0.1, beta = 0.9, debug = False):
+    def __init__(self, head, nodes, num_stops = -1, iterations = 1000, temperature = 30, temperature_decrement_method = 'linear', alpha = 0.1, beta = 0.9, debug = False):
         # initalize parameters
         self.head = head
         self.nodes = nodes
@@ -17,6 +17,7 @@ class SimulatedAnnealingOptimizer:
         self.alpha = alpha # temp cooling rate
         self.beta = beta # hyper parameter
         self.debug = debug # debug for printing results
+        self.number_of_stops = num_stops
 
     # replace a bar in crawl with one not already in the crawl
     def __find_another_bar(self, stop_idx):
@@ -56,7 +57,16 @@ class SimulatedAnnealingOptimizer:
             return potential_crawl
         
         # duration added to stop end, removed from next stop start
+        # stay at stop for at least 1 min
         duration_to_change  = random.randint(1, 10) * random.choice([-1, 1])
+
+        # saturate new time to not exceed non-changing stop times
+        if (potential_crawl.stops[stop_idx].e_time + duration_to_change < potential_crawl.stops[stop_idx].s_time + 1):
+            duration_to_change = potential_crawl.stops[stop_idx].e_time - potential_crawl.stops[stop_idx].s_time + 1
+
+        if (potential_crawl.stops[stop_idx+1].s_time + duration_to_change > potential_crawl.stops[stop_idx+1].e_time - 1):
+            duration_to_change = potential_crawl.stops[stop_idx+1].e_time - potential_crawl.stops[stop_idx+1].s_time - 1
+
         potential_crawl.stops[stop_idx].e_time += duration_to_change
         potential_crawl.stops[stop_idx+1].s_time += duration_to_change
 
@@ -112,11 +122,10 @@ class SimulatedAnnealingOptimizer:
 
     def simulated_annealing(self):
         # initalize crawl
-        self.current_crawl = crawl_class.Crawl([]).randomize(head=self.head, nodes=self.nodes)
+        self.current_crawl = crawl_class.Crawl([]).randomize(head=self.head, nodes=self.nodes, num_stops=self.number_of_stops)
         self.current_crawl_fun = self.current_crawl.evaluate_crawl()
         self.best_crawl = self.current_crawl.copy()
         self.best_crawl_fun = self.best_crawl.evaluate_crawl()
-        self.number_of_stops = self.current_crawl.length()
 
         itr = 0
 

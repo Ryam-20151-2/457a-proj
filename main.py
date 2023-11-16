@@ -35,16 +35,21 @@ def create_crawl(head, nodes):
 # create simulated annealing crawl
 def create_sa_crawl(head, nodes):
     # all parameters but head and nodes are optional
-    sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes, iterations = 1000, temperature = 3, temperature_decrement_method = 'geometric', alpha = 0.1, beta = 0.9, debug = False)
+    sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes, iterations = 1000, num_stops = 7, temperature = 3, temperature_decrement_method = 'geometric', alpha = 0.1, beta = 0.9, debug = False)
     crawl = sa.simulated_annealing()
     return crawl
 
 # this the main, wild, don't touch it    
 def main():
     head, nodes = create()
-    crawl = create_crawl(head, nodes)
-    crawl.print_crawl_history()
+    # crawl = create_crawl(head, nodes)
+    # crawl.print_crawl_history()
     sa_crawl = create_sa_crawl(head, nodes)
+    crawl = sa_crawl
+    crawl.print_crawl_history()
+
+    # crawl = test_ils.main_ILS(head=head, nodes=nodes)
+    # crawl.print_crawl_history()
 
     if (crawl.isValid):
         val = crawl.evaluate_crawl()
