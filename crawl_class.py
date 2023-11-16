@@ -40,7 +40,13 @@ class Crawl:
 
     #utility array functions
     def append(self, stop: classes.stop):
-        self.stops.append(stop)
+        return self.stops.append(stop)
+
+    def remove(self, stop: classes.stop):
+        return self.stops.remove(stop)
+    
+    def insert(self, index: int, stop: classes.stop):
+        return self.stops.insert(index, stop)
 
     def length(self):
         return len(self.stops)
