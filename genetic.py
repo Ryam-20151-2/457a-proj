@@ -1,5 +1,5 @@
+import math
 import random
-import copy
 
 import classes
 import crawl_class
@@ -31,13 +31,26 @@ def create_crawl_genetic(head: classes.Node, nodes: list[classes.Node], num_gene
 
 
         #sorts crawl list according to evaluated score        
-
         crawl_list_eval_sorted, crawl_list_sorted = list(zip(*sorted(zip(crawl_list_eval, crawl_list), reverse=True)))
 
+        for item in crawl_list_eval_sorted:
+            print(item)
+
+        print("\n")
         parent_list = []
         count = 0
-        while count < num_parents:
+        while count < num_parents/4:
             parent_list.append(crawl_list_sorted[count].copy())
+            count += 1
+
+        exclusion = []
+        while count < num_parents:
+            randNum = random.randint(math.floor(num_parents/2), len(crawl_list_sorted)-1)
+            
+            while randNum in exclusion:
+                randNum = random.randint(math.floor(num_parents/2), len(crawl_list_sorted)-1)
+           
+            parent_list.append(crawl_list_sorted[randNum].copy())
             count += 1
 
 
