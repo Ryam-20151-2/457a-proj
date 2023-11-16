@@ -5,7 +5,7 @@ import numpy as np
 from scipy.special import logsumexp
 
 class SimulatedAnnealingOptimizer:
-    def __init__(self, head, nodes, iterations = 1000, temperature = 3, temperature_decrement_method = 'linear', alpha = 0.1, beta = 0.9, debug = False):
+    def __init__(self, head, nodes, iterations = 1000, temperature = 30, temperature_decrement_method = 'linear', alpha = 0.1, beta = 0.9, debug = False):
         # initalize parameters
         self.head = head
         self.nodes = nodes
@@ -21,6 +21,10 @@ class SimulatedAnnealingOptimizer:
     # replace a bar in crawl with one not already in the crawl
     def __find_another_bar(self, stop_idx):
         
+        # don't replace first bar
+        if stop_idx==0:
+            return self.current_crawl
+
         # duplicate current crawl
         crawl_class.Crawl: potential_crawl 
         potential_crawl = self.current_crawl.copy()
@@ -39,7 +43,7 @@ class SimulatedAnnealingOptimizer:
         potential_crawl.stops[stop_idx].node = new_bar
 
         return potential_crawl
-    
+
     # modify a stop's time in the crawl (both stop end time and next stop start time)
     def __modify_time(self, stop_idx):
 
@@ -101,23 +105,22 @@ class SimulatedAnnealingOptimizer:
     # wrapper to modify crawl by changing bars
     def swap_stop(self, stop_idx_to_swap):
         self.__modify_crawl("bar",stop_idx_to_swap)
-    
+
     # wrapper to modify crawl by changing times
     def adjust_times(self,stop_idx_to_modify):
         self.__modify_crawl("time",stop_idx_to_modify)
 
     def simulated_annealing(self):
-        
         # initalize crawl
         self.current_crawl = crawl_class.Crawl([]).randomize(head=self.head, nodes=self.nodes)
         self.current_crawl_fun = self.current_crawl.evaluate_crawl()
         self.best_crawl = self.current_crawl.copy()
         self.best_crawl_fun = self.best_crawl.evaluate_crawl()
-        number_of_stops = self.current_crawl.length()
+        self.number_of_stops = self.current_crawl.length()
 
         itr = 0
 
-        # debug, will print start conitions
+        # debug, will print start conditions
         if self.debug:
             print("Start Current Crawl")
             self.current_crawl.print_crawl_history()
@@ -127,7 +130,7 @@ class SimulatedAnnealingOptimizer:
         while (itr < self.iterations):
 
             # for each stop in crawl, modify bar and times
-            for stop_idx in range (0,number_of_stops):
+            for stop_idx in range (0,self.number_of_stops):
                 self.swap_stop(stop_idx)
                 self.adjust_times(stop_idx)
 
@@ -143,7 +146,7 @@ class SimulatedAnnealingOptimizer:
             else:
                 self.temperature = 0
 
-        #  debug, will print end conitions
+        #  debug, will print end conditions
         if self.debug:
             print("End Current Crawl")
             self.current_crawl.print_crawl_history()
