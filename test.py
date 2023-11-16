@@ -1,20 +1,19 @@
 import main
 import classes
+import crawl_class
+import smartsearch
 
 head, nodes = main.create()
+
 crawl = main.create_crawl(head, nodes)
+stop = crawl[-1]
 
-node = crawl.generate_new_node(nodes)
-stop = classes.stop(node)
+pass
 
-print(crawl)
-
-crawl.insert(0, stop)
-
-print(crawl)
-crawl.remove(stop)
+crawl = smartsearch.smartSearch(head, nodes)
 
 
 print(crawl)
+print(crawl.evaluate_crawl())
 
 pass
