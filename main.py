@@ -22,7 +22,7 @@ def create():
 # this function is call to create a crawl in the form of a list. The list is returned, the list should start with the head
 # and each stop should be added in order based on your algorithm
 def create_crawl(head, nodes):
-    crawl = ant_colony.ant_colony(10, head, nodes)
+    crawl = ant_colony.ant_colony(100, head, nodes)
     return crawl
     
 # this the main, wild, don't touch it    

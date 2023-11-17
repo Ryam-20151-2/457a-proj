@@ -11,8 +11,6 @@ def normalize_2d(matrix):
     return matrix
 
 def ant_colony(iterations, head, nodes):
-    # initalizing a random head nodes, and all nodes that can be used in the crawl optimization
-
     t = 0 # iteration for ant colony algorithm
     n = 1000 # number of ants
     hours = 8 # length of crawl in hours
@@ -34,13 +32,13 @@ def ant_colony(iterations, head, nodes):
         for ant in range(n):
             ant_crawl = crawl_class.Crawl([]) # initialize an empty crawl per ant
             probability = random.random()   # probability for ant to visit a bar
-            for t in range(hours):
+            for c in range(hours):
                 random.shuffle(nodes) # randomly iterate through bars so the first bar isnt always chosen first
                 for bar in range(len(nodes)): 
-                    limit = phermones[bar][t]   # chance of visiting the bar is based on the phermones
+                    limit = phermones[bar][c]   # chance of visiting the bar is based on the phermones
                     if (probability < limit):   # if probability is less than the limit, go to the bar
                         bar_chosen = bar
-                        time_chosen = t
+                        time_chosen = c
                         break
                     else:
                         probability -= limit   # increase the probability of going to a bar if the bar limit is too high
@@ -62,9 +60,11 @@ def ant_colony(iterations, head, nodes):
             
             # updating phermones
             for stop in ant_crawl.stops:
-                    phermones[nodes.index(stop.node)][int((stop.e_time-stop.s_time)/60)] += best_payoff/gamma
+                phermones[nodes.index(stop.node)][int((stop.e_time-stop.s_time)/60)] += best_payoff/gamma
 
             # normalize the phermones in the bar
             phermones = normalize_2d(phermones)
+
+        t += 1 # increment counter for iterations loop
 
     return best_crawl
