@@ -3,7 +3,6 @@ import csv
 import classes
 import crawl_class
 import payoffs
-import main
 import numpy as np
 
 def normalize_2d(matrix):
@@ -11,9 +10,8 @@ def normalize_2d(matrix):
     matrix = matrix/norm  # normalized matrix
     return matrix
 
-def ant_colony():
+def ant_colony(iterations, head, nodes):
     # initalizing a random head nodes, and all nodes that can be used in the crawl optimization
-    head, nodes = main.create()
 
     t = 0 # iteration for ant colony algorithm
     n = 1000 # number of ants
@@ -32,7 +30,7 @@ def ant_colony():
     best_crawl = crawl_class.Crawl([])
     best_payoff= 0
 
-    while(t<100): # until convergence...
+    while(t<iterations): # until convergence...
         for ant in range(n):
             ant_crawl = crawl_class.Crawl([]) # initialize an empty crawl per ant
             probability = random.random()   # probability for ant to visit a bar
@@ -70,7 +68,3 @@ def ant_colony():
             phermones = normalize_2d(phermones)
 
     return best_crawl
-
-
-bc = ant_colony()
-print(bc)
