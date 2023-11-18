@@ -1,6 +1,5 @@
 import crawl_class
 import classes
-import payoffs
 
 
 #narrows bar list to keep only the best bars in the list
@@ -29,13 +28,13 @@ def bestNodesAtTime(nodes: list[classes.Node], time: int, numNodes: int=1) -> cl
         if (len(bestNodes) < numNodes):
             bestNodes.append(node)
             worstBestNode = findWorstNode(nodes=bestNodes, time=time)
-            worstBestPayoff = payoffs.calc_payoff_step(time=time, node=worstBestNode)
+            worstBestPayoff = worstBestNode.calc_payoff_step(time=time)
 
-        elif (payoffs.calc_payoff_step(time=time, node=node) > worstBestPayoff):
+        elif (node.calc_payoff_step(time=time) > worstBestPayoff):
             bestNodes.append(node)
             bestNodes.remove(worstBestNode)
             worstBestNode = findWorstNode(nodes=bestNodes, time=time)
-            worstBestPayoff = payoffs.calc_payoff_step(time=time, node=worstBestNode)
+            worstBestPayoff = worstBestNode.calc_payoff_step(time=time)
 
     return bestNodes
 
@@ -46,8 +45,8 @@ def findWorstNode(nodes: list[classes.Node], time: int) -> classes.Node:
     worstPayoff = float('inf')
 
     for node in nodes:
-        if (payoffs.calc_payoff_step(time=time, node=node) < worstPayoff):
-            worstPayoff = payoffs.calc_payoff_step(time=time, node=node)
+        if (node.calc_payoff_step(time=time) < worstPayoff):
+            worstPayoff = node.calc_payoff_step(time=time)
             worstNode = node
 
     return worstNode

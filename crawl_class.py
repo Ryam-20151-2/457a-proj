@@ -1,9 +1,9 @@
-import payoffs
 import classes
 
 import math
 import random
 import copy
+import matplotlib.pyplot as plt
 
 class Crawl:
     def __init__(self, stops: [], start: int=0, end: int=480):
@@ -44,6 +44,9 @@ class Crawl:
     #utility array functions
     def append(self, stop: classes.stop):
         return self.stops.append(stop)
+
+    def extend(self, stop):
+        return self.stops.extend(stop)
 
     def remove(self, stop: classes.stop):
         return self.stops.remove(stop)
@@ -86,10 +89,10 @@ class Crawl:
     def evaluate_crawl(self):
         val = 0
         prev_stop = self.stops[0]
-        for x in self.stops:
-            val += payoffs.calc_payoff(x)
-            val -= payoffs.calc_distance_penatly(x, prev_stop)
-            prev_stop = x
+        for stop in self.stops:
+            val += stop.calc_payoff()
+            val -= stop.calc_distance_penalty(prev_stop)
+            prev_stop = stop
         return val
 
 
@@ -157,3 +160,53 @@ class Crawl:
         print("Crawl History:")
         for stop in self.stops:
             print(f"{stop.node.name} from {stop.s_time} to {stop.e_time}")
+
+    def visualize_payoffs(self, t_start=0, t_end=480, show=True):
+        
+        t = []
+        p = []
+        for stop in self:
+            t_s, p_s = stop.visualize_payoffs(t_start=t_start, t_end=t_end, show=False)
+            t.extend(t_s)
+            p.extend(p_s)
+
+        if show:
+            plt.plot(t, p, color="black")
+            plt.xlabel("Time")
+            plt.ylabel("Payoff")
+            plt.show()
+        return [t, p]
+
+    def visualize_payoffs_cumulative(self, t_start=0, t_end=480, show=True):
+        
+        t, p = self.visualize_payoffs(t_start=t_start, t_end=t_end, show=False)
+
+        
+
+        max = len(t) - 1
+        i = 0
+        while i < max:
+            if (t[i] == t[i+1]):
+                p[i+1] += p[i]
+                del p[i]
+                del t[i]
+                max -= 1
+            i += 1
+
+        stop = 0
+
+        for i in range(1, len(p)):
+            p[i] += p[i-1]
+            if ((self[stop].e_time == i) and (stop < self.length() - 1)):
+                p[i] -= self[stop].calc_distance_penalty(self[stop+1])
+                stop += 1
+
+        if show:
+            plt.plot(t, p, color="black")
+            plt.xlabel("Time")
+            plt.ylabel("Payoff")
+            plt.show()
+
+        return [t, p]
+
+        
