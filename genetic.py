@@ -33,10 +33,6 @@ def create_crawl_genetic(head: classes.Node, nodes: list[classes.Node], num_gene
         #sorts crawl list according to evaluated score        
         crawl_list_eval_sorted, crawl_list_sorted = list(zip(*sorted(zip(crawl_list_eval, crawl_list), reverse=True)))
 
-        for item in crawl_list_eval_sorted:
-            print(item)
-
-        print("\n")
         parent_list = []
         count = 0
         while count < num_parents/4:
