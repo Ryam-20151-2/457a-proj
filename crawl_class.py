@@ -125,6 +125,21 @@ class Crawl:
 
         return node
     
+    def concatenate(self):
+
+        for stop in self:
+            if (stop.s_time == stop.e_time):
+                self.remove(stop)
+
+        i = 0
+        while i < self.length() - 1:
+            if (self[i].node.name == self[i+1].node.name):
+                self[i].e_time = self[i+1].e_time
+                self.remove(self[i+1])
+            else:
+                i += 1
+        return self
+    
 
     #removes all crawl data and creates a new random crawl
     def randomize(self, head: classes.Node, nodes: list[classes.Node], num_stops: int = -1):
