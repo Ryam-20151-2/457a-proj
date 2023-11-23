@@ -110,20 +110,20 @@ class Crawl:
     
 
     #generates a node that is not already in the crawl
-    # def generate_new_node(self, nodes: list[classes.Node]) -> classes.Node:
+    def generate_new_node(self, nodes: list[classes.Node]) -> classes.Node:
         
-    #     num_nodes = len(nodes)
+        num_nodes = len(nodes)
 
-    #     #finds bar not already on crawl and adds it to crawl
-    #     node = None
-    #     while (node == None):
-    #         node_num = random.randint(0, num_nodes - 1)
-    #         node = nodes[node_num]
+        #finds bar not already on crawl and adds it to crawl
+        node = None
+        while (node == None):
+            node_num = random.randint(0, num_nodes - 1)
+            node = nodes[node_num]
             
-    #         if (self.inCrawl(node)):
-    #             node = None
+            if (self.inCrawl(node)):
+                node = None
 
-    #     return node
+        return node
     
     def concatenate(self):
 
@@ -142,27 +142,27 @@ class Crawl:
     
 
     # #removes all crawl data and creates a new random crawl
-    # def randomize(self, head: classes.Node, nodes: list[classes.Node], num_stops: int = -1):
+    def randomize(self, head: classes.Node, nodes: list[classes.Node], num_stops: int = -1):
 
-    #     self = Crawl([])
-    #     self.append(classes.stop(node=head, s_time=0, e_time=0))        #creates crawl list with the first stop
+        self = Crawl([])
+        self.append(classes.stop(node=head, s_time=0, e_time=0))        #creates crawl list with the first stop
 
-    #     # if no required stops, randomly select number
-    #     if num_stops == -1:
-    #         num_stops = random.randint(2, 5)    #generates a random number for the stops
+        # if no required stops, randomly select number
+        if num_stops == -1:
+            num_stops = random.randint(2, 5)    #generates a random number for the stops
         
-    #     # ensure stop count chosen is within bounds
-    #     else:
-    #         num_stops = max(num_stops,2)
-    #         num_stops = min(num_stops, len(nodes))
+        # ensure stop count chosen is within bounds
+        else:
+            num_stops = max(num_stops,2)
+            num_stops = min(num_stops, len(nodes))
 
-    #     #adds random number of stops to the list
-    #     for i in range(1, num_stops):
+        #adds random number of stops to the list
+        for i in range(1, num_stops):
 
-    #         new_node = self.generate_new_node(nodes)
-    #         self.append(classes.stop(new_node,0,0))
-    #     #sets the start and end times evenly spaced
-    #     self.balance_times()
+            new_node = self.generate_new_node(nodes)
+            self.append(classes.stop(new_node,0,0))
+        #sets the start and end times evenly spaced
+        self.balance_times()
 
         return self
     
