@@ -101,8 +101,8 @@ def iterative_local_search(max_itr, head, nodes) -> crawl_class.Crawl:
     # return the best crawl
     return bestCrawl
 
-def main_ILS(head, nodes):
+def main_ILS(head, nodes, itr):
     # call iterative search
-    return iterative_local_search(100, head, nodes)
+    return iterative_local_search(itr, head, nodes)
 
     #do some stuff idk

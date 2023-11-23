@@ -3,34 +3,51 @@ import csv
 import classes
 import crawl_class
 import simulated_annealing
+import genetic
+import ILS
+import ant_colony
 #imports
 
 # this is a setup funciton, it reads a csv and initializes all the nodes and returns a list and head    
 def create():
     nodes = []
-    length = 1
+    length = 2
     
     with open('ex.csv') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in spamreader:
             nodes.append(classes.Node(row[0],float(row[1]),float(row[2]),float(row[3]),float(row[4]),float(row[5])))
 
-    head = nodes[random.randint(0,length)]
-    head.node_print()
+    head = nodes[random.randint(0,len(nodes)-1)]
+    print(head.name)
     return head, nodes
 
 # this function is call to create a crawl in the form of a list. The list is returned, the list should start with the head
 # and each stop should be added in order based on your algorithm
 def create_crawl(head, nodes):
-    crawl = crawl_class.Crawl([])
-    crawl.append(classes.stop(nodes[0],0,120))
-    crawl.append(classes.stop(nodes[1],120,240))
-    crawl.append(classes.stop(nodes[2],240,360))
-    crawl.append(classes.stop(nodes[3],360,480))
+    crawl_sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes, num_stops=-1, iterations = 10000, temperature = 30, temperature_decrement_method = 'geometric', alpha = 0.1, beta = 0.9, debug = False).simulated_annealing()
+    crawl_ILS = ILS.main_ILS(head, nodes,1000)
+    crawl_ga = genetic.create_crawl_genetic(head, nodes)
+    crawl_ant = ant_colony.ant_colony(head, nodes,200,100)
+    best_crawl = crawl_sa;
+    values = [(crawl_sa.evaluate_crawl(),"Simulated Annealing",crawl_sa),
+              (crawl_ILS.evaluate_crawl(),"Iterative Local Search",crawl_ILS),
+              (crawl_ga.evaluate_crawl(),"Genetic Algorithm",crawl_ga),
+              (crawl_ant.evaluate_crawl(),"Ant Colony",crawl_ant)]
+    values.sort()
+    for x in values:
+        print(x[1]+" has value: " + str(x[0]))
+        x[2].print_crawl_history()
+        print("\n")
+    print(values[3][1]+" is best")
+    
+    best_crawl = values[3][2]
+        
+    
     #add more shit based on your code
     #append stops to crawl, return crawl when complete
     #import your file and add your function here
-    return crawl
+    return best_crawl
 
 # create simulated annealing crawl
 def create_sa_crawl(head, nodes):
@@ -44,7 +61,7 @@ def main():
     head, nodes = create()
     crawl = create_crawl(head, nodes)
     crawl.print_crawl_history()
-    sa_crawl = create_sa_crawl(head, nodes)
+    #sa_crawl = create_sa_crawl(head, nodes)
 
     if (crawl.isValid):
         val = crawl.evaluate_crawl()
