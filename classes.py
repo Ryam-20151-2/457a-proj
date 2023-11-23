@@ -31,7 +31,15 @@ class stop:
             payoff += self.calc_payoff_step(i)
         
         #punishes payoff slightly for being too long/small of a stop
-        den = 1 + 0.005*abs(120 - (self.e_time - self.s_time))
+        delta = self.e_time - self.s_time
+        
+        timePun = 0
+        if (delta > 150):
+            timePun = delta-120
+        elif (delta < 90):
+            timePun = 90 - delta
+
+        den = 1 + 0.01*timePun
         payoff = payoff / den
         return payoff
     
@@ -121,7 +129,7 @@ class Node:
 
         distance = self.calc_distance(other)
 
-        return 20 * (distance ** 1.2)
+        return 150 * (distance ** 1.2)
 
     def calc_payoff_step(self, time: int):
 

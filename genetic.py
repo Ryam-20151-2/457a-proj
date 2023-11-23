@@ -35,16 +35,19 @@ def create_crawl_genetic(head: classes.Node, nodes: list[classes.Node], num_gene
 
         parent_list = []
         count = 0
-        while count < num_parents/4:
+        guaranteed_spot = math.floor(num_parents/4)
+
+        while count < guaranteed_spot:
             parent_list.append(crawl_list_sorted[count].copy())
             count += 1
 
         exclusion = []
+        
         while count < num_parents:
-            randNum = random.randint(math.floor(num_parents/2), len(crawl_list_sorted)-1)
+            randNum = random.randint(guaranteed_spot, len(crawl_list_sorted)-1)
             
             while randNum in exclusion:
-                randNum = random.randint(math.floor(num_parents/2), len(crawl_list_sorted)-1)
+                randNum = random.randint(guaranteed_spot, len(crawl_list_sorted)-1)
            
             parent_list.append(crawl_list_sorted[randNum].copy())
             count += 1
@@ -62,28 +65,33 @@ def mutate_crawl(crawl: crawl_class.Crawl, head: classes.Node, nodes: list[class
 
     prob = random.random()
     if (prob < prob_major_mutation):
-        return mutation_major(crawl=crawl, head=head, nodes=nodes)
+        crawl = mutation_major(crawl=crawl, head=head, nodes=nodes)
     
-    else:
-        return mutation_shift_time(crawl=crawl)
+    prob = random.random()
+    while (prob < prob_shift_time):
+        crawl = mutation_shift_time(crawl=crawl)
+        prob_shift_time /= 2
+        prob = random.random()
+        
+    return crawl
 
 
-def mutation_major(crawl: crawl_class.Crawl, head: classes.Node, nodes: list[classes.Node], prob_add: float=0.25, prob_remove: float=0.25, 
-                   prob_swap_out: float=0.25, prob_swap_spots: float=0.25) -> crawl_class.Crawl:
+def mutation_major(crawl: crawl_class.Crawl, head: classes.Node, nodes: list[classes.Node], prob_add: float=0.2, prob_remove: float=0.2, 
+                   prob_swap_out: float=0.2, prob_swap_spots: float=0.2) -> crawl_class.Crawl:
 
     prob = random.random()
     if (prob < prob_add):
         return mutation_add(crawl, nodes=nodes)
     
-    prob = random.random()
+    prob -= prob_add
     if (prob < prob_remove):
         return mutation_remove(crawl)
     
-    prob = random.random()
+    prob -= prob_remove
     if (prob < prob_swap_out):
         return mutation_swap_out(crawl, nodes=nodes)
     
-    prob = random.random()
+    prob -= prob_swap_out
     if (prob < prob_swap_spots):
         return mutation_swap_spots(crawl)
 
