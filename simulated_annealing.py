@@ -5,7 +5,7 @@ import numpy as np
 from scipy.special import logsumexp
 
 class SimulatedAnnealingOptimizer:
-    def __init__(self, head, nodes, max_stops = 8, iterations = 1000, temperature = 100, temperature_decrement_method = 'geometric', alpha = 0.9, beta = 0.9):
+    def __init__(self, head, nodes, max_stops = 8, iterations = 1000, temperature = 100, temperature_decrement_method = 'slow', alpha = 0.7, beta = 0.3):
         # initalize parameters
         self.head = head
         self.nodes = nodes

@@ -28,7 +28,7 @@ def create_crawl(head, nodes):
     timer = time_function.Timer()
     
     timer.start("Simulated Annealing")
-    crawl_sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes, num_stops=-1, iterations = 10000, temperature = 30, temperature_decrement_method = 'geometric', alpha = 0.1, beta = 0.9, debug = False).simulated_annealing()
+    crawl_sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes).simulated_annealing()
     timer.stop("Simulated Annealing")
 
     timer.start("Iterative Local Search")
