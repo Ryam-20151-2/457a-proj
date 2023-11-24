@@ -1,5 +1,6 @@
 import random
 import csv
+import time_function
 import classes
 import crawl_class
 import simulated_annealing
@@ -22,14 +23,27 @@ def create():
     print(head.name)
     return head, nodes
 
-# this function is call to create a crawl in the form of a list. The list is returned, the list should start with the head
-# and each stop should be added in order based on your algorithm
 def create_crawl(head, nodes):
+    
+    timer = time_function.Timer()
+    
+    timer.start("Simulated Annealing")
     crawl_sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes, num_stops=-1, iterations = 10000, temperature = 30, temperature_decrement_method = 'geometric', alpha = 0.1, beta = 0.9, debug = False).simulated_annealing()
+    timer.stop("Simulated Annealing")
+
+    timer.start("Iterative Local Search")
     crawl_ILS = ILS.main_ILS(head, nodes,1000)
+    timer.stop("Iterative Local Search")
+
+    timer.start("Genetic Algorithm")
     crawl_ga = genetic.create_crawl_genetic(head, nodes)
+    timer.stop("Genetic Algorithm")
+
+    timer.start("Ant Colony")
     crawl_ant = ant_colony.ant_colony(head, nodes,200,100)
-    best_crawl = crawl_sa;
+    timer.stop("Ant Colony")
+
+    best_crawl = crawl_sa
     values = [(crawl_sa.evaluate_crawl(),"Simulated Annealing",crawl_sa),
               (crawl_ILS.evaluate_crawl(),"Iterative Local Search",crawl_ILS),
               (crawl_ga.evaluate_crawl(),"Genetic Algorithm",crawl_ga),
@@ -37,6 +51,7 @@ def create_crawl(head, nodes):
     values.sort()
     for x in values:
         print(x[1]+" has value: " + str(x[0]))
+        print(f"{x[1]} took {timer.get_elapsed_time(x[1]):.2f} seconds to run")
         x[2].print_crawl_history()
         print("\n")
     print(values[3][1]+" is best")
