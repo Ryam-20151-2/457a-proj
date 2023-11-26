@@ -4,7 +4,7 @@ import random
 import classes
 import crawl_class
 
-def create_crawl_genetic(head: classes.Node, nodes: list[classes.Node], num_generations: int=100, num_parents: int=20, child_per_parent: int=4) -> list[classes.stop]:
+def create_crawl_genetic(head: classes.Node, nodes: list[classes.Node], num_generations: int=120, num_parents: int=20, child_per_parent: int=4) -> list[classes.stop]:
 
     #generate random parents given num_parents
     parent_list = []
@@ -157,15 +157,15 @@ def mutation_shift_time(crawl: crawl_class.Crawl) -> crawl_class.Crawl:
     if (shift_duration < 0):
 
         crawl[shift_location - 1].e_time += shift_duration
-        if (crawl[shift_location - 1].e_time < crawl[shift_location - 1].s_time):
-            crawl[shift_location - 1].e_time = crawl[shift_location - 1].s_time
+        if (crawl[shift_location - 1].e_time <= crawl[shift_location - 1].s_time):
+            crawl[shift_location - 1].e_time = crawl[shift_location - 1].s_time + 1
         crawl[shift_location].s_time = crawl[shift_location - 1].e_time
 
     elif (shift_duration > 0):
 
         crawl[shift_location].s_time += shift_duration
-        if (crawl[shift_location].s_time > crawl[shift_location].e_time):
-            crawl[shift_location].s_time = crawl[shift_location].e_time
+        if (crawl[shift_location].s_time >= crawl[shift_location].e_time):
+            crawl[shift_location].s_time = crawl[shift_location].e_time - 1
         crawl[shift_location - 1].e_time = crawl[shift_location].s_time
 
     return crawl
