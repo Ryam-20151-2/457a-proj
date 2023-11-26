@@ -5,25 +5,41 @@ import numpy as np
 from scipy.special import logsumexp
 
 class SimulatedAnnealingOptimizer:
-    def __init__(self, head, nodes, num_stops = -1, iterations = 1000, temperature = 30, temperature_decrement_method = 'linear', alpha = 0.1, beta = 0.9, debug = False):
+    def __init__(self, head, nodes, max_stops = 8, iterations = 1000, temperature = 100, temperature_decrement_method = 'slow', alpha = 0.8, beta = 0.2, view_iteration_counter = False):
         # initalize parameters
         self.head = head
         self.nodes = nodes
         self.iterations = iterations
-        self.best_crawl_fun = float('-inf')
-        self.current_crawl_fun = float('-inf')
-        self.temperature = temperature
+        self.current_crawl = crawl_class.Crawl([]).randomize(head=self.head, nodes=self.nodes, num_stops=max_stops)
+        self.current_crawl_fun = self.current_crawl.evaluate_crawl()
+        self.best_crawl = self.current_crawl.copy()
+        self.best_crawl_fun = self.best_crawl.evaluate_crawl()
+        self.number_of_stops = self.current_crawl.length()
+        self.temperature_outer = temperature
+        self.temperature_local = temperature
         self.temperature_decrement_method = temperature_decrement_method
         self.alpha = alpha # temp cooling rate
         self.beta = beta # hyper parameter
-        self.debug = debug # debug for printing results
-        self.number_of_stops = num_stops
+        self.view_counter = view_iteration_counter
+        self.innerCounter = 0
+        self.iterations_since_last_best = 0
+        self.best_changed = False
+
+    def decrement_temperature(self, temperature, method):
+        if method == 'linear':
+            return temperature - self.alpha
+        elif method == 'geometric':
+            return temperature * self.alpha
+        elif method == 'slow':
+            return temperature / (1 + (self.beta * temperature))
+        else:
+            return 0
 
     # replace a bar in crawl with one not already in the crawl
     def __find_another_bar(self, stop_idx):
         
         # don't replace first bar
-        if stop_idx==0:
+        if stop_idx==0 or stop_idx > self.number_of_stops-1:
             return self.current_crawl
 
         # duplicate current crawl
@@ -47,7 +63,7 @@ class SimulatedAnnealingOptimizer:
 
     # modify a stop's time in the crawl (both stop end time and next stop start time)
     def __modify_time(self, stop_idx):
-
+        
         # duplicate current crawl
         crawl_class.Crawl: potential_crawl 
         potential_crawl = self.current_crawl.copy()
@@ -56,19 +72,29 @@ class SimulatedAnnealingOptimizer:
         if stop_idx+1 >= potential_crawl.length():
             return potential_crawl
         
-        # duration added to stop end, removed from next stop start
-        # stay at stop for at least 1 min
+        # duration added to stop end, removed from next stop start, stay at stop for at least 1 min
         duration_to_change  = random.randint(1, 10) * random.choice([-1, 1])
 
         # saturate new time to not exceed non-changing stop times
-        if (potential_crawl.stops[stop_idx].e_time + duration_to_change < potential_crawl.stops[stop_idx].s_time + 1):
-            duration_to_change = potential_crawl.stops[stop_idx].e_time - potential_crawl.stops[stop_idx].s_time + 1
+        if (potential_crawl.stops[stop_idx].e_time + duration_to_change < potential_crawl.stops[stop_idx].s_time):
+            duration_to_change = potential_crawl.stops[stop_idx].e_time - potential_crawl.stops[stop_idx].s_time
+        
+        # saturate new time to not exceed non-changing stop times
+        if (potential_crawl.stops[stop_idx+1].s_time + duration_to_change > potential_crawl.stops[stop_idx+1].e_time):
+            duration_to_change = potential_crawl.stops[stop_idx+1].e_time - potential_crawl.stops[stop_idx+1].s_time
 
-        if (potential_crawl.stops[stop_idx+1].s_time + duration_to_change > potential_crawl.stops[stop_idx+1].e_time - 1):
-            duration_to_change = potential_crawl.stops[stop_idx+1].e_time - potential_crawl.stops[stop_idx+1].s_time - 1
-
+        # if first stop, don't modify starttime
+        if stop_idx == 0:
+            if potential_crawl.stops[0].e_time + duration_to_change < 1:
+                duration_to_change = 1 - potential_crawl.stops[0].e_time
+        
+        # modify times
         potential_crawl.stops[stop_idx].e_time += duration_to_change
         potential_crawl.stops[stop_idx+1].s_time += duration_to_change
+
+        # if stop end time is equal to stop start time, remove stop
+        potential_crawl.concatenate()
+        self.number_of_stops = potential_crawl.length()
 
         return potential_crawl  
 
@@ -85,30 +111,30 @@ class SimulatedAnnealingOptimizer:
 
         # evaluate fun of potential crawl
         potentialCrawlFun = potential_crawl.evaluate_crawl() 
-        Delta_E = potentialCrawlFun - self.current_crawl_fun 
+        Delta_E = self.current_crawl_fun - potentialCrawlFun
 
         # if potential crawl is more fun than current crawl, update current
-        if (Delta_E > 0):
+        if (Delta_E <= 0):
             self.current_crawl_fun = potentialCrawlFun
             self.current_crawl = potential_crawl
-
+                        
             # if current crawl is more fun than best crawl, update best
             if self.current_crawl_fun > self.best_crawl_fun:
                 self.best_crawl = self.current_crawl.copy()
                 self.best_crawl_fun = self.best_crawl.evaluate_crawl()
+                self.best_changed = True
+
         else:
             # SIMULATED ANNEALING:
-
-            # check if payoff is within acceptable bounds based on temperature
-            u = random.uniform(0, 1)
-
             # ensure no divide by 0 error
-            if self.temperature > 0:
+            if self.temperature_local > 0:
 
-                # using log sum exp trick to prevent overflow, evaluate payoff criteria
-                # if potential crawl fun is within acceptable bounds, update current
-                log_sum_exp_term = -Delta_E / self.temperature
-                if u <= np.exp(logsumexp([0, -log_sum_exp_term])):
+                # check if payoff is within acceptable bounds based on temperature
+                u = random.uniform(0, 1)
+
+                # simulate annealing temperature comparison
+                log_sum_exp_term = -Delta_E/ self.temperature_local
+                if u <= np.exp(log_sum_exp_term):
                     self.current_crawl_fun = potentialCrawlFun
                     self.current_crawl = potential_crawl
 
@@ -120,51 +146,47 @@ class SimulatedAnnealingOptimizer:
     def adjust_times(self,stop_idx_to_modify):
         self.__modify_crawl("time",stop_idx_to_modify)
 
-    def simulated_annealing(self):
-        # initalize crawl
-        self.current_crawl = crawl_class.Crawl([]).randomize(head=self.head, nodes=self.nodes, num_stops=self.number_of_stops)
-        self.current_crawl_fun = self.current_crawl.evaluate_crawl()
-        self.best_crawl = self.current_crawl.copy()
-        self.best_crawl_fun = self.best_crawl.evaluate_crawl()
-        self.number_of_stops = self.current_crawl.length()
+    def local_simulated_annealing(self, max_iterations):
 
-        itr = 0
+        for _ in range(max_iterations):
 
-        # debug, will print start conditions
-        if self.debug:
-            print("Start Current Crawl")
-            self.current_crawl.print_crawl_history()
-            print(self.current_crawl_fun, "\n")
-
-        # iterate 
-        while (itr < self.iterations):
-
+            self.innerCounter+=1
             # for each stop in crawl, modify bar and times
             for stop_idx in range (0,self.number_of_stops):
                 self.swap_stop(stop_idx)
                 self.adjust_times(stop_idx)
-
-            itr += 1
-
-            # temperature decrement method
-            if self.temperature_decrement_method == 'linear':
-                self.temperature = self.temperature - self.alpha  # Linear reduction rule
-            elif self.temperature_decrement_method == 'geometric':
-                self.temperature = self.temperature * self.alpha  # Geometric reduction rule
-            elif self.temperature_decrement_method == 'slow':
-                self.temperature = self.temperature / (1 + (self.beta * self.temperature))  # Slow-decrease rule
+           
+            if self.best_changed:
+                self.iterations_since_last_best = 0
+                self.best_changed = False
             else:
-                self.temperature = 0
+                self.iterations_since_last_best += 1
 
-        #  debug, will print end conditions
-        if self.debug:
-            print("End Current Crawl")
-            self.current_crawl.print_crawl_history()
-            print(self.current_crawl_fun, "\n")
+            self.temperature_local = self.decrement_temperature(self.temperature_local, self.temperature_decrement_method)
+
+    def simulated_annealing(self):
+        max_temp = 0.75
+        outerCounter = 0
+
+        for _ in range(self.iterations):
+            outerCounter+=1
+            if self.temperature_outer > max_temp:
+                # generate a random crawl, and evaluate it
+                self.current_crawl = crawl_class.Crawl([]).randomize(head=self.head, nodes=self.nodes, num_stops=self.number_of_stops)
+                self.current_crawl_fun = self.current_crawl.evaluate_crawl()
+                self.local_simulated_annealing(max(int(self.iterations*0.01),10))
             
-            print("Best Crawl")
-            self.best_crawl.print_crawl_history()
-            print(self.best_crawl_fun, "\n")
+            else:
+                # do deeper digging on the best one
+                self.current_crawl = self.best_crawl.copy()
+                self.current_crawl_fun = self.current_crawl.evaluate_crawl()
+                self.local_simulated_annealing(max(self.iterations-self.innerCounter, 10))
+                break
 
-        # return best crawl
+            self.temperature_outer = self.decrement_temperature(self.temperature_outer, self.temperature_decrement_method)
+
+        if (self.view_counter):
+            print(f"SA: Outer (high temp crawl randomize) counter: {outerCounter}, Inner (total) counter: {self.innerCounter}")
+            print(f"SA: Iterations since last best: {self.iterations_since_last_best}")
+        
         return self.best_crawl
