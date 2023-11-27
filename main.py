@@ -64,7 +64,7 @@ def create_crawl(head, nodes):
     #import your file and add your function here
     return best_crawl
 
-def compare_crawls(head, nodes, number_of_tests):
+def compare_crawls(number_of_tests):
 
     crawl_score_total = {}
     crawl_time_total = {}
@@ -72,6 +72,7 @@ def compare_crawls(head, nodes, number_of_tests):
     
     for idx in range(number_of_tests):
         print(f'Run number: {idx+1}')
+        head, nodes = create()
 
         timer.start("Simulated Annealing")
         crawl_sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes, iterations=1000).simulated_annealing()
@@ -112,7 +113,7 @@ def main():
     head, nodes = create()
 
     if (batch_crawl):
-        compare_crawls(head=head, nodes=nodes, number_of_tests=5)
+        compare_crawls(number_of_tests=5)
         return
     crawl = create_crawl(head, nodes)
     crawl.print_crawl_history()
