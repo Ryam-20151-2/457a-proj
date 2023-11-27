@@ -64,19 +64,59 @@ def create_crawl(head, nodes):
     #import your file and add your function here
     return best_crawl
 
-# create simulated annealing crawl
-def create_sa_crawl(head, nodes):
-    # all parameters but head and nodes are optional
-    sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes)
-    crawl = sa.simulated_annealing()
-    return crawl
+def compare_crawls(number_of_tests):
 
+    crawl_score_total = {}
+    crawl_time_total = {}
+    timer = time_function.Timer()
+    
+    for idx in range(number_of_tests):
+        print(f'Run number: {idx+1}')
+        head, nodes = create()
+
+        timer.start("Simulated Annealing")
+        crawl_sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes, iterations=1000).simulated_annealing()
+        timer.stop("Simulated Annealing")
+
+        timer.start("Iterative Local Search")
+        crawl_ILS = ILS.main_ILS(head, nodes,1000)
+        timer.stop("Iterative Local Search")
+
+        timer.start("Genetic Algorithm")
+        crawl_ga = genetic.create_crawl_genetic(head, nodes)
+        timer.stop("Genetic Algorithm")
+
+        timer.start("Ant Colony")
+        crawl_ant = ant_colony.ant_colony(head, nodes,200,100)
+        timer.stop("Ant Colony")
+
+        values = [(crawl_sa.evaluate_crawl(),"Simulated Annealing"),
+            (crawl_ILS.evaluate_crawl(),"Iterative Local Search"),
+            (crawl_ga.evaluate_crawl(),"Genetic Algorithm"),
+            (crawl_ant.evaluate_crawl(),"Ant Colony")]
+
+        # add score and time to total
+        crawl_score_total = {x[1]: crawl_score_total.get(x[1], 0.0) + x[0] for x in values}
+        crawl_time_total = {x[1]: crawl_time_total.get(x[1], 0.0) + timer.get_elapsed_time(x[1]) for x in values}
+        
+    # divide to get average score and compute average time
+    crawl_score_total = {k: v / number_of_tests for k, v in crawl_score_total.items()}
+    crawl_time_total = {k: v / number_of_tests for k, v in crawl_time_total.items()}
+    
+    # print crawl name, score, and time
+    for name in crawl_score_total.keys():
+        print(f"{name}: Average Score: {crawl_score_total[name]:.4f} Average Duration: {crawl_time_total[name]:.4f}")
+    
 # this the main, wild, don't touch it    
 def main():
+    batch_crawl = True
+    if (batch_crawl):
+        compare_crawls(number_of_tests=5)
+        return
+    
     head, nodes = create()
     crawl = create_crawl(head, nodes)
     crawl.print_crawl_history()
-    #sa_crawl = create_sa_crawl(head, nodes)
 
     if (crawl.isValid):
         val = crawl.evaluate_crawl()
