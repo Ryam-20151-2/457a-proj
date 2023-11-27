@@ -110,11 +110,11 @@ def compare_crawls(number_of_tests):
 # this the main, wild, don't touch it    
 def main():
     batch_crawl = True
-    head, nodes = create()
-
     if (batch_crawl):
         compare_crawls(number_of_tests=5)
         return
+    
+    head, nodes = create()
     crawl = create_crawl(head, nodes)
     crawl.print_crawl_history()
 
