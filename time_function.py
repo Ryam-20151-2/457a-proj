@@ -5,18 +5,11 @@ class Timer:
         self.runtimes = {}
 
     def start(self, label):
-        if label in self.runtimes:
-            print(f"Timer '{label}' is already running.")
-            return
         self.runtimes[label] = {'start': time.time()}
 
     def stop(self, label):
         if label not in self.runtimes:
             print(f"Timer '{label}' hasn't started yet.")
-            return
-
-        if 'end' in self.runtimes[label]:
-            print(f"Timer '{label}' is already stopped.")
             return
 
         self.runtimes[label]['end'] = time.time()
