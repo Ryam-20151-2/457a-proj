@@ -4,7 +4,7 @@ import random
 import classes
 import crawl_class
 
-def create_crawl_genetic(head: classes.Node, nodes: list[classes.Node], num_generations: int=120, num_parents: int=20, child_per_parent: int=4) -> list[classes.stop]:
+def create_crawl_genetic(head: classes.Node, nodes: list[classes.Node], num_generations: int=100, num_parents: int=10, child_per_parent: int=8) -> list[classes.stop]:
 
     #generate random parents given num_parents
     parent_list = []

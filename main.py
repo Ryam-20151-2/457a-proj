@@ -2,7 +2,6 @@ import random
 import csv
 import time_function
 import classes
-import crawl_class
 import simulated_annealing
 import genetic
 import ILS
@@ -20,7 +19,7 @@ def create():
             nodes.append(classes.Node(row[0],float(row[1]),float(row[2]),float(row[3]),float(row[4]),float(row[5])))
 
     head = nodes[random.randint(0,len(nodes)-1)]
-    print(head.name)
+    
     return head, nodes
 
 def create_crawl(head, nodes):
@@ -28,11 +27,11 @@ def create_crawl(head, nodes):
     timer = time_function.Timer()
     
     timer.start("Simulated Annealing")
-    crawl_sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes, iterations=1000).simulated_annealing()
+    crawl_sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes, iterations=150).simulated_annealing()
     timer.stop("Simulated Annealing")
 
     timer.start("Iterative Local Search")
-    crawl_ILS = ILS.main_ILS(head, nodes,1000)
+    crawl_ILS = ILS.main_ILS(head, nodes,12)
     timer.stop("Iterative Local Search")
 
     timer.start("Genetic Algorithm")
@@ -40,7 +39,7 @@ def create_crawl(head, nodes):
     timer.stop("Genetic Algorithm")
 
     timer.start("Ant Colony")
-    crawl_ant = ant_colony.ant_colony(head, nodes,200,100)
+    crawl_ant = ant_colony.ant_colony(head, nodes,130,50) #change to 50
     timer.stop("Ant Colony")
 
     best_crawl = crawl_sa
@@ -57,11 +56,7 @@ def create_crawl(head, nodes):
     print(values[3][1]+" is best")
     
     best_crawl = values[3][2]
-        
-    
-    #add more shit based on your code
-    #append stops to crawl, return crawl when complete
-    #import your file and add your function here
+
     return best_crawl
 
 def compare_crawls(number_of_tests):
@@ -69,17 +64,22 @@ def compare_crawls(number_of_tests):
     crawl_score_total = {}
     crawl_time_total = {}
     timer = time_function.Timer()
-    
-    for idx in range(number_of_tests):
+    head, nodes = create()
+    for idx in range(len(nodes)-1):
         print(f'Run number: {idx+1}')
-        head, nodes = create()
+        head = nodes[idx]
+        print(head.name)
+        
 
         timer.start("Simulated Annealing")
-        crawl_sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes, iterations=1000).simulated_annealing()
+        crawl_sa = simulated_annealing.SimulatedAnnealingOptimizer(head=head, nodes=nodes, iterations=100).simulated_annealing()
         timer.stop("Simulated Annealing")
 
         timer.start("Iterative Local Search")
-        crawl_ILS = ILS.main_ILS(head, nodes,1000)
+        #use 2000 for
+        #use 30 for fastest
+        #Use 60 for efficincy
+        crawl_ILS = ILS.main_ILS(head, nodes,80)
         timer.stop("Iterative Local Search")
 
         timer.start("Genetic Algorithm")
@@ -87,7 +87,7 @@ def compare_crawls(number_of_tests):
         timer.stop("Genetic Algorithm")
 
         timer.start("Ant Colony")
-        crawl_ant = ant_colony.ant_colony(head, nodes,200,100)
+        crawl_ant = ant_colony.ant_colony(head, nodes,50,40)
         timer.stop("Ant Colony")
 
         values = [(crawl_sa.evaluate_crawl(),"Simulated Annealing"),
@@ -100,31 +100,39 @@ def compare_crawls(number_of_tests):
         crawl_time_total = {x[1]: crawl_time_total.get(x[1], 0.0) + timer.get_elapsed_time(x[1]) for x in values}
         
     # divide to get average score and compute average time
-    crawl_score_total = {k: v / number_of_tests for k, v in crawl_score_total.items()}
-    crawl_time_total = {k: v / number_of_tests for k, v in crawl_time_total.items()}
+    crawl_score_total = {k: v / len(nodes) for k, v in crawl_score_total.items()}
+    crawl_time_total = {k: v / len(nodes) for k, v in crawl_time_total.items()}
     
     # print crawl name, score, and time
     for name in crawl_score_total.keys():
-        print(f"{name}: Average Score: {crawl_score_total[name]:.4f} Average Duration: {crawl_time_total[name]:.4f}")
+        print(f"{name}: Average Score: {crawl_score_total[name]:.4f} Average Duration: {crawl_time_total[name]:.4f} Average eff: "+ str(crawl_score_total[name]/crawl_time_total[name]))
     
 # this the main, wild, don't touch it    
 def main():
-    batch_crawl = True
+    batch_crawl = False
     if (batch_crawl):
         compare_crawls(number_of_tests=5)
         return
     
     head, nodes = create()
-    crawl = create_crawl(head, nodes)
+    best_crawl = simulated_annealing.SimulatedAnnealingOptimizer(head=nodes[0], nodes=nodes, iterations=200).simulated_annealing()
+    for x in nodes:
+        #crawl = simulated_annealing.SimulatedAnnealingOptimizer(head=x, nodes=nodes, iterations=200).simulated_annealing()
+        crawl = genetic.create_crawl_genetic(head, nodes)
+        print(x.name)
+        if crawl.evaluate_crawl() > best_crawl.evaluate_crawl():
+            best_crawl = crawl
+    #crawl = create_crawl(head, nodes)
+    crawl = best_crawl
     crawl.print_crawl_history()
-
+    crawl.visualize_payoffs_cumulative()
+    crawl.visualize_payoffs()
     if (crawl.isValid):
         val = crawl.evaluate_crawl()
         print(f"your crawl has value {val}")
     else:
-        print("your crawl is shit")
+        print("your crawl is invalid")
     
 #also the main                 kinda
 if __name__ == "__main__":
     main()
-    
