@@ -2,12 +2,13 @@ import random
 import csv
 import time_function
 import classes
-import crawl_class
 import simulated_annealing
 import genetic
 import ILS
 import ant_colony
 #imports
+
+
 
 # this is a setup funciton, it reads a csv and initializes all the nodes and returns a list and head    
 def create():
@@ -58,10 +59,6 @@ def create_crawl(head, nodes):
     
     best_crawl = values[3][2]
         
-    
-    #add more shit based on your code
-    #append stops to crawl, return crawl when complete
-    #import your file and add your function here
     return best_crawl
 
 def compare_crawls(number_of_tests):
@@ -109,11 +106,13 @@ def compare_crawls(number_of_tests):
     
 # this the main, wild, don't touch it    
 def main():
-    batch_crawl = True
+    # run lots of crawls and get average
+    batch_crawl = False
     if (batch_crawl):
         compare_crawls(number_of_tests=5)
         return
     
+    #run one crawl
     head, nodes = create()
     crawl = create_crawl(head, nodes)
     crawl.print_crawl_history()
@@ -122,7 +121,7 @@ def main():
         val = crawl.evaluate_crawl()
         print(f"your crawl has value {val}")
     else:
-        print("your crawl is shit")
+        print("your crawl is invalid")
     
 #also the main                 kinda
 if __name__ == "__main__":
